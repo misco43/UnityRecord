@@ -1,0 +1,61 @@
+public class Choose : MonoBehaviour
+{
+    public GameObject[] canChooseThings;
+    public Canvas canvas;
+
+    private GraphicRaycaster raycaster;
+    private EventSystem eventSystem;
+
+    void Start()
+    {
+        gameObject.GetComponent<RectTransform>().localScale = Vector3.zero;
+        raycaster = canvas.GetComponent<GraphicRaycaster>();
+        eventSystem = EventSystem.current;
+    }
+
+    void Update()
+    {
+        if (Input.GetMouseButtonDown(0)) {
+            int index = MouseChoose();
+            if (index != -1) {
+                switch (index) {
+                    case 0:
+                        Debug.Log("选择了第1个物体");
+                        _DialogManager.Instance.PlaySpecialDialog(index);
+                        break;
+                    case 1:
+                        Debug.Log("选择了第2个物体");
+                        _DialogManager.Instance.PlaySpecialDialog(index);
+                        break;
+                    case 2:
+                        Debug.Log("选择了第3个物体");
+                        _DialogManager.Instance.PlaySpecialDialog(index);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+    }
+
+    private int MouseChoose()
+    {
+        PointerEventData pointerEventData = new PointerEventData(eventSystem);
+        pointerEventData.position = Input.mousePosition;
+
+        List<RaycastResult> results = new List<RaycastResult>();
+        raycaster.Raycast(pointerEventData, results);
+
+        foreach (RaycastResult result in results) {
+            GameObject obj = result.gameObject;
+            for (int i = 0; i < canChooseThings.Length; i++) {
+                if (obj == canChooseThings[i]) {
+                    Debug.Log("选择了第" + (i + 1) + "个物体");
+                    return i;
+                }
+            }
+        }
+
+        return -1;
+    }
+}
